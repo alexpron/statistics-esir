@@ -1,0 +1,160 @@
+---
+title: "Statistiques Inférentielles: Tests d'hypothèses"
+output: html_notebook
+---
+
+## Illustration sur des données simulées 
+### Question 1: Test de comparaison de la moyenne d'un échantillon à une moyenne théorique (one sample t-test)
+
+```{r}
+# chargement du fichier 
+sample <- read.table('../data/td3ex1_100.dat', header = F, dec= '.')
+# calcul de la moyenne de l'echantillon
+mean_sample = mean(sample$V1)
+print(mean_sample)
+```
+##### Hypothèses
+ Soit $X \sim N(\mu, \sigma)$. On observe $(X_1,\cdots, X_n)$ un échantillon aléatoire i.i.d. de taille $n$   
+ L'hypothèse nulle $H_0$ est  $\mu = 1.5$ vs $H_1$ $\mu \neq 1.5$ (hypothèse alternative bilatérale).
+
+On fixe le niveau de signification ou risque de première espèce $\alpha = 0.05$. 
+$\alpha$ correspond à la probabilité de rejeter $H_0$ sachant que $H_0$ est vraie. 
+
+##### Statistique de test
+En considérant $H_0$ vraie on a: 
+$$\hat{\mu} = \frac{\frac{1}{n}\sum_{i=1}^{n}X_i - 1.5}{{\sqrt{\frac{s^2}{n}}}}$$  
+avec $s^2$ l'estimateur sans biais de la variance de $X$
+La statistique $\hat{\mu}$ suit sous $H_0$ une loi de Student à $n-1$ degré de liberté.
+
+##### Probabilité critique ou P value 
+La p value notée $p$ correspond à probabilité d'observer un évènement aussi extrême sachant que $H_0$ est vraie. 
+si $p < \alpha$ alors on rejette $H_0$. 
+
+
+```{r}
+#' Perform one sample t test (sample mean comparison to a theoretical mean with unknown variance)
+#' 
+#' @param path_table path of the table containing data.
+#' @param mu_H0 theoretical mean Float.
+#' @returns None
+#' @examples
+
+one_sample_t_test <-function(path_table, mu_HO, alpha=0.95){
+
+  # import de la table
+  sample <- read.table(path_table, header = F, dec= '.')
+  # calcul de la moyenne de l'echantillon
+  mean_sample <- mean(sample$V1)
+  cat(" La moyenne en substance active de l'échantillon est de:", mean_sample)
+  # test de Student sur un échantillon
+  result <-t.test(sample$V1, mu=mu_HO,conf.level = alpha)
+  if (result$p.value < (1-alpha)){
+    cat("\n La p value associée au test est", result$p.value,"on rejette HO")
+  }
+  else
+    cat("\n La p value associée au test est", result$p.value,"on ne rejette PAS HO")
+}
+```
+
+```{r}
+# Valeur de la moyenne théorique sous H0
+mu_H0 <- 1.5
+```
+##### Test de $H_0$ sur un échantillon de taille 100 
+
+```{r}
+one_sample_t_test(path_table = '../data/td3ex1_100.dat',mu_H0)
+```
+##### Test de $H_0$ sur un échantillon de taille 1000
+```{r}
+one_sample_t_test(path_table = '../data/td3ex1_1000.dat', mu_H0)
+```
+
+## Test de comparaison d'échantillons (two sample t-test)
+L'hypothèse nulle,  $H_0$ est $\mu_{long} \leq \mu_{stand}$ et $H_1$,  $\mu_{long} > \mu_{stand}$
+
+Les deux échantillons sont issus d'une loi gaussienne et sont indépendants. Leurs variances ne sont pas connues. 
+On utilise la statistique de test suivante:
+$$\frac{\bar{X_1} - \bar{X_2}}{\sqrt{\frac{s_1^2}{N_1} + \frac{s_2^2}{N_2}}}$$
+Sous $H_0$ la statistique de test suit une loi de Student  dont le nombre de degré de liberté $\nu$ est une fonction complexe des deux échantillons. (Voir https://search.r-project.org/CRAN/refmans/DanielBiostatistics10th/html/Gosset_Welch.html et les références contenues pour une explication détaillée) 
+
+
+Le fichier n'est a priori pas disponible sur Moodle nous allons simuler les données  en nous inspirant de l'énoncé. On sait que la durée de vie d'une batterie standard (et longlife) suit une loi normale. La durée moyenne d'une batterie standard est estimée à 120 heures. Nous pouvons donc simuler un échantillon gaussien de taille $n_{standart}=1000$ et d'écart type $\sigma_{standard}=20$. Pour simuler l'échantillon des batteries long life
+utilison un échantillon de taille $n_long$=500 et une distribution gaussienne de moyenne $\mu_long=130$ et d'écart type $\sigma_{standard}=30$
+
+> Remarque: afin de nous assurer d'avoir des résultats cohérents on fixe la graine du générateur de nombre aléatoire de R en utilisant l'instruction setseed(123). 
+
+```{r}
+set.seed(123)
+standard = rnorm(1000, 120, 20)
+longlife = rnorm(500, 130, 30)
+result = t.test(longlife,standard, alternative="greater")
+print(result)
+```
+
+```{r}
+set.seed(123)
+standard = rnorm(1000, 120, 20)
+longlife = rnorm(500, 120, 30)
+result = t.test(longlife, mean=120 + 12, alternative="greater")
+print(result)
+```
+
+
+
+## Application sur des données réelles
+
+```{r}
+# Chargement des données
+data("PlantGrowth")
+summary(PlantGrowth)
+```
+
+### Description de données
+
+```{r}
+boxplot(weight ~ group, data=PlantGrowth)
+# Mediane differente par sous-groupe et deux sous groupes semblent asymétriques (attention peu de données)
+# Estimation ponctuelle des poids moyen par sous-groupe
+mean_by_group <- aggregate(PlantGrowth$weight, list(PlantGrowth$group), FUN=mean)
+print(mean_by_group)
+```
+
+### Estimation par intervalle de confiance
+# Calcul de moments de la distribution
+> 
+
+```{r}
+library(e1071)     
+skewness_by_group <- aggregate(PlantGrowth$weight, list(PlantGrowth$group), FUN=skewness)
+kurtosis_by_group <- aggregate(PlantGrowth$weight, list(PlantGrowth$group), FUN=kurtosis)
+print(skewness_by_group)
+print(kurtosis_by_group)
+```
+```{r}
+for (gr in unique(PlantGrowth$group)){
+conf_int <- t.test(PlantGrowth[PlantGrowth$group == gr, 1])$conf.int
+print(conf_int)
+}
+```
+
+### Test d'hypothèse
+```{r}
+for (gr in unique(PlantGrowth$group)){
+df <- PlantGrowth[PlantGrowth$group != gr,]
+res <- t.test(weight ~ group, data=df)
+print(res)
+}
+```
+
+
+Une ressource interessante sur le même dataset
+https://www.datanovia.com/en/blog/how-to-perform-t-test-for-multiple-groups-in-r/
+La pratique courante est de realiser une ANOVA (qui indique si des différences statistiques existent entre les moyenne des différents groupes puis d'effectuer des tests dits post hoc (t test) en corrigeant pour le nombre de test effectués p.ex. méthode de Bonferonni qui consiste à diviser le niveau de risque $\alpha$ initial par le nombre de tests)
+
+
+```{r}
+pwc <- PlantGrowth %>%
+  pairwise_t_test(weight ~ group, p.adjust.method = "bonferroni")
+print(pwc)
+```

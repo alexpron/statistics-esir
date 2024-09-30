@@ -1,0 +1,36 @@
+```R
+names(iris)
+summary(iris$Species) # 50 iris par species
+
+# Need to transform the species into count or frequences
+species <- iris$Species
+species.freq = table(species)
+pie(species.freq, labels=species)
+species.count = table(species)
+pie(species.count)
+
+# selection from the dataframe
+iris[iris$Species == setosa, 1]
+
+
+for (variable in names(iris)[1])
+    # Select a variable of interest
+    var_selection <-subset(iris, select=varname)[,1]
+    # Histogram
+	par(mfrow = c(2, 2))
+   #hist(var_selection, ylim=c(0,60),xlim=c(min(var_selection), #max(var_selection)), main=espece, col="blue",
+    #xlab=variable)
+    # Sub Histogram per Species
+    for (espece in unique(iris$Species))  
+        print(espece)
+        selection  <- subset(iris, Species == espece,select=varname)[,1]
+        hist(selection, ylim=c(0,60),xlim=c(min(var_selection), max(var_selection)), main=espece, col="red",
+    xlab=variable)
+		
+# Plot a box plot per category (not working dont do that)
+par(mfrow = c(1, length(names(iris))))
+for (variable in names(iris)[1])
+	boxplot(variable ~ Species, data=iris)
+
+```
+
