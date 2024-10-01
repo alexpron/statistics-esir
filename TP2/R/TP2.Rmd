@@ -1,0 +1,102 @@
+---
+title: "TP2: Statistiques inférentielles: Intervalles de confiance"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+# Constants
+sigma <- 9
+mu <- 100
+n <- 36 # sample size
+```
+
+
+```{r}
+# fix random generation (good pratice to debug and compare)
+set.seed(123)
+sample <- rnorm(n=n,mean=mu,sd=sigma)
+hist(sample)
+```
+```{r}
+confidence_interval_mean <- function(sample, sample_sd, alpha){
+  mean_sample <- mean(sample)
+  width <- sample_sd/sqrt(length(sample))*qnorm(1-(alpha/2))
+  ci <- c(mean_sample - width, mean_sample + width)
+  return(ci)
+}
+
+ci_width <- function(ci){
+  width = ci[2] - ci[1]
+  return(width)
+}
+```
+
+```{r}
+# interval de confiance de la moyenne à 95% (alpha=0.05)
+alpha <- 0.05
+ci <- confidence_interval_mean(sample, sigma, alpha)
+print(ci)
+# largeur de l'intervalle
+ci_width_default <- ci_width(ci)
+print(ci_width_default)
+```
+```{r}
+# interval de confiance de la moyenne à 90% (alpha=0.1)
+alpha <- 0.1
+ci <- confidence_interval_mean(sample, sigma, alpha)
+print(ci)
+# largeur de l'intervalle
+ci_width_090 <- ci_width(ci)
+print(ci_width_090)
+```
+On remarque que :
++ l'estimation ponctuelle de la moyenne est identique (l'échantillon n'a pas été regénéré)
++ la largeur de l'intervalle de confiance évolue en $ u_{1- \frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}$
++ à taille d'échantillon $n$ et écart type fixé, la taille de l'intervalle de confiance associée à la moyenne diminue quand $\alpha$ augmente.
+
+```{r}
+is_mean_in_ci <-function(ci, theoretical_mean){
+
+  lower_inclusion <- (theoretical_mean >= ci[1])
+  upper_inclusion <- (theoretical_mean <= ci[2])
+  inclusion_test <- (lower_inclusion && upper_inclusion)
+  
+return(inclusion_test) 
+}
+```
+
+```{r}
+n_repetition <- 10000
+for (alpha in c(0.05,0.1)){
+  n_in <- 0
+  for (i in 1:n_repetition){
+   sample <- rnorm(n=n,mean=mu,sd=sigma)
+   ci <- confidence_interval_mean(sample, sigma, alpha)
+   test <- is_mean_in_ci(ci, mu)
+   if (test == TRUE){
+     n_in <- (n_in + 1)
+   }
+  }
+  f_mean_in = n_in/n_repetition
+  cat("Pourcentage du nombre d'occurence de la vraie moyenne dans l'intervalle de confiance pour un risque   alpha=",alpha, ":",f_mean_in, "\n")
+}
+
+```
+
+## La fonction t.test
+```{r}
+# Lets take the exact same sample
+set.seed(123)
+n <- 36
+sample <- rnorm(n=n,mean=mu,sd=sigma)
+ci_095_unknown_var <- t.test(sample)$conf.int
+ci_width_095_unknown_var <- ci_width(ci_095_unknown_var)
+ci_090_unknown_var <- t.test(sample,conf.level = 0.90)$conf.int
+ci_width_090_unknown_var <- ci_width(ci_090_unknown_var)
+print(ci_width_095_unknown_var)
+print(ci_width_090_unknown_var)
+```
