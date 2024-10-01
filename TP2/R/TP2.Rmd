@@ -54,8 +54,9 @@ ci_width_090 <- ci_width(ci)
 print(ci_width_090)
 ```
 On remarque que :
+
 + l'estimation ponctuelle de la moyenne est identique (l'échantillon n'a pas été regénéré)
-+ la largeur de l'intervalle de confiance évolue en $ u_{1- \frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}$
++ la largeur de l'intervalle de confiance évolue en $ u_{1-\frac{\alpha}{2}}}\frac{\sigma}{\sqrt{n}}$
 + à taille d'échantillon $n$ et écart type fixé, la taille de l'intervalle de confiance associée à la moyenne diminue quand $\alpha$ augmente.
 
 ```{r}
@@ -100,3 +101,9 @@ ci_width_090_unknown_var <- ci_width(ci_090_unknown_var)
 print(ci_width_095_unknown_var)
 print(ci_width_090_unknown_var)
 ```
+
+La largeur de l'intervalle de confiance associé à la moyenne quand l'ecart type est connu est donnée par
+$2u_{1-\frac{\alpha}{2}}\frac{\sigma}{n}$ à mettre en regard avec $2t_{1-\frac{\alpha}{2}}(n-1)\frac{s^*}{n}$.
+
+
+$t_{1-\frac{\alpha}{2}}(n-1)> u_{1-\frac{\alpha}{2}}$ l'intervalle de confiance associé à l'estimation de la moyenne sans connaitre la variance est donc plus large et ce particulièrement lorsque n est petit. Lorsque la taille d'échantillon n augmente la distribution de Student tend vers une loi normale, les largeurs des intervalles de confiance sont équivalentes. 
