@@ -27,7 +27,7 @@ $\hat{\sigma^2}$ = $s^2$
 
 **Estimation par intervalle de confiance de $\mu$**
 
-1. **$\sigma$ est connu** 
+1. **$\sigma$ est connue** 
 
 $$ CI = \{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}} \}$$ . 
 
@@ -36,9 +36,9 @@ $$ CI = \{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \
 
 2. **$\sigma$ est inconnue**
 
-$$ CI = \{ \bar{X} - \frac{(n-1)s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}, \bar{X} + \frac{(n-1) s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}} \}$$
+$$CI = \{ \bar{X} - \frac{(n-1)s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}, \bar{X} + \frac{(n-1) s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}} \}$$
 
-+ Remarque l'intervalle est aléatoire (car $\bar{X}$ et $s^*$ sont des variables aléatoire s) centré en  $\bar{X}$  et de largeur $2*\frac{(n-1) s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}$ 
+> Remarque l'intervalle est aléatoire (car $\bar{X}$ et $S^{*}$ sont des variables aléatoires),  centré en  $\bar{X}$  et de largeur $2*\frac{(n-1) s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}$ 
 
 
 
