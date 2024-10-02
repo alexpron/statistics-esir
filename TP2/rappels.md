@@ -29,7 +29,7 @@ $\hat{\sigma^2}$ = $s^2$
 
 1. **$\sigma$ est connue** 
 
-$$ CI = \{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}} \}$$ . 
+$$CI = \{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}} \}$$ . 
 
 + Remarque l'intervalle est aléatoire (car $\bar{X}$ est une variable aléatoire ) centré en  $\bar{X}$  et de largeur $2*\frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}$ 
 + L'intervalle de confiance tend vers $\bar{X}$ quand $n$ tend vers $+\infin$
