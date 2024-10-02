@@ -36,7 +36,7 @@ $$\{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \frac{\
 
 2. **$\sigma$ est inconnue**
 
-$$\{ \bar{X} - \frac{\sigma}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1), \bar{X} + \frac{\sigma}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1) \}$$
+$$\{ \bar{X} - \frac{$S^{*}}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1), \bar{X} + \frac{S^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1) \}$$
 
 > Remarque l'intervalle est aléatoire (car $\bar{X}$ et $S^{*}$ sont des variables aléatoires),  centré en  $\bar{X}$  et de largeur $2*\frac{(n-1) s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}$ 
 
