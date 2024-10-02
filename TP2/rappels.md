@@ -9,7 +9,7 @@ Soit $(X_1, X_2, \cdots, X_n)$ un échantillon de $n$ variables aléatoires *ind
 
 + $\bar{X} \sim N(\mu, \frac{\sigma^2}{n})$  si $n>30$ : $\bar{X}$ suit une loi normale (Théorème Central Limite) et ce **quelle que soit la loi initiale** de X 
 
-+ $s^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})$  est **un** estimateur de $\sigma^2$
++ $s^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})^2$  est **un** estimateur de $\sigma^2$
 
 + $E[s^2] = \sigma^2$ et $var[s^2]= 2 \frac{(N-1)\sigma^4}{N^2}$ $s^2$ est un estimateur sans biais et consistant de $\sigma^2$. 
 
