@@ -29,14 +29,14 @@ $\hat{\sigma^2}$ = $s^2$
 
 1. **$\sigma$ est connue** 
 
-\{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}} \}$$
+$$\{ \bar{X} - \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}, \bar{X} + \frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}} \}$$
 
 + Remarque l'intervalle est aléatoire (car $\bar{X}$ est une variable aléatoire ) centré en  $\bar{X}$  et de largeur $2*\frac{\sigma}{\sqrt{n}} u_{1-\frac{\alpha}{2}}$ 
 + L'intervalle de confiance tend vers $\bar{X}$ quand $n$ tend vers $+\infin$
 
 2. **$\sigma$ est inconnue**
 
-\{ \bar{X} - \frac{\sigma}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1), \bar{X} + \frac{\sigma}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1) \}$$
+$$\{ \bar{X} - \frac{\sigma}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1), \bar{X} + \frac{\sigma}{\sqrt{n}} t_{1-\frac{\alpha}{2}}(n-1) \}$$
 
 > Remarque l'intervalle est aléatoire (car $\bar{X}$ et $S^{*}$ sont des variables aléatoires),  centré en  $\bar{X}$  et de largeur $2*\frac{(n-1) s^*}{\sqrt{n}} t_{1-\frac{\alpha}{2}}$ 
 
