@@ -1,12 +1,14 @@
 # stat-esir
 Code pour les TPs de Statistiques de l'ESIR (STAT 5).
 
-Les énoncés des TP mentionnent le logiciel R mais l'utilisation de Python est également possible.
-Les code correspondant aux énoncés des TP sont proposés en R et en Python quand possible
+Les TPs et corrigés associés sont fournis dans le langage R
 
 ## Ressources
+### Généralités
 
-**Tests statistiques**
+https://mathsv.univ-lyon1.fr/app/cours/?theme=proba&chap=6 
+
+### Les tests en pratique
 
 https://help.xlstat.com/fr/6443-which-statistical-test-should-you-use 
 
