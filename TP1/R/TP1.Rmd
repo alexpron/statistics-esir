@@ -1,0 +1,205 @@
+---
+title: "TP1: Introduction à R et Statistiques Descriptives"
+output: html_notebook
+---
+
+```{r}
+# repertoire de travail courant
+print(getwd())
+# utiliser dans un terminal setwd pour fixer le repertoire courant
+# setwd('')
+```
+
+## Exercices de TD
+### TD1 - exercice 1
+
+```{r}
+df <- read.table("../data/td1ex1_data.dat", header=T, dec=".")
+# résumé des charactéristiques des données 
+print(summary(df))
+# boîte à moustache (boxplot)
+boxplot(df)
+# recupération des valeurs aberrantes
+quantiles <- quantile(df$taux)
+# remarque il existe egalement une fonction IQR
+iqr <- (quantiles[3] - quantiles[1]) # Q3 - Q1
+# moustache inférieure
+lower_bound <- (quantiles[1] - 1.5*iqr)
+# moustache supérieure
+upper_bound <- (quantiles[3] + 1.5*iqr)
+# valeurs aberrantes
+outliers <- df$taux[(df$taux<lower_bound) | (df$taux>upper_bound)]
+cat("Valeurs aberrantes detectées en appliquant la règle des boîtes à moustaches",outliers)
+# Remarque: on peut vérifier la validité de la détection en affichant les valeurs triées et en s'aidant du boxplot affiché
+# Il existe egalement des packages R (p.ex. shiny) permettant un affichage interactif des valeurs
+print(sort(df$taux))
+
+```
+On observe sur la boîte à moustache (ronds blancs) la présence de 2 valeurs aberrantes (outliers).
+
+### TD1 exercice 2
+
+```{r}
+df <- read.table("../data/td1ex2_data.dat", header=F)
+
+par(mfrow=c(1,3))
+
+# défaut
+hist(df$V1, col="lightgreen",ylim=c(0,80), main="Méthode par défaut", xlab="Taille mesurée (cm)")
+
+# avec nombre de classes fixes identiques au TD
+hist(df$V1, col="lightgreen",ylim=c(0,80),main=paste("10 classes"), xlab="Taille mesurée (cm)")
+
+#' Compute breaks associated with constants class width from the min
+#' 
+#' @param x A numeric vector.
+#' @param step A integer.
+#' @returns bins, A numeric vector.
+#' @examples
+#' get_breaks(x, 10)
+get_breaks <- function(x, step=10){
+  x_min <- min(x)
+  x_max <- max(x)
+  bin_max <-(((x_max - x_min)%/% step + 1)*step + x_min)
+  bins <- seq(x_min, bin_max, step)
+  return(bins)
+}
+class_width <- 10
+hist(df$V1, col="lightgreen",ylim=c(0,80),main=paste("classes de largeur fixe =", class_width), breaks=get_breaks(df$V1, class_width), xlab="Taille mesurée (cm)")
+
+```
+
+###TD1 - exercice 4
+
+```{r}
+df <- read.table("../data/td1ex4_data.txt", header=T)
+# affichage de la distribution jointe
+plot(df$Statistiques,df$Anglais)
+# calcul du coefficient de correlation 
+rxy <- cor(df$Anglais,df$Statistiques)
+# estimation du modèle linéaire : ax + b
+regression <- lm(formula=df$Anglais~df$Statistiques)
+print(regression$coefficients)
+
+# ajout de la droite de regression avec coefficient estimés précédement
+abline(regression$coefficients[1], regression$coefficients[2], col='blue')
+# ajout d'une droite avec formule donnée
+abline(6,rxy*(sd(df$Statistiques)/(sd(df$Anglais))), col='orange')
+
+```
+Les deux droites (bleu - regression et orange coefficient directeur fixé) sont parallèles, leur coefficient directeur semblent donc identiques. On en déduit que le coefficient du modèle de régression est estimé selon la formule $r_{xy}\frac {\hat{\sigma}_y}{\hat{\sigma}_x}$.
+
+## Description d'un fichier de données : les iris de Fischer
+```{r}
+data('iris')
+print(summary(iris))
+```
+### Q1
+150 iris sont décrits au moyen de 5 variables: 4 variables quantitatives continues (longeur et largeur des petales et des sépales) et 1 variable catégorielle (espèce)
+
+### Q2
+La fonction summary(iris) indique trois espèces d'iris avec un effectif de 50 iris chacune.Le diagramme en camembert correspondant est visible ci-dessous.
+```{r}
+species <- iris$Species
+species.freq = table(species)
+pie(species.freq)
+```
+### Q3 Selection de données
+
+```{r}
+# selection de l'ensemble des individues et variables d'une espece dans le dataset iris
+setosa_df <-iris[iris$Species == 'setosa', ]
+# selection de l'ensemble des individues et d'une variable particulière d'une espece dans le dataset iris
+setosa_length <-iris[iris$Species == 'setosa', "Petal.Length"]
+```
+
+### Q4 Affichage des histogrammes par variable et par espèce
+```{r}
+for (variable in names(iris)[-5]){
+    # Select a variable of interest
+    var_selection <-subset(iris, select=variable)[,1]
+    # Histogram
+	  par(mfrow = c(2, 3))
+    hist(var_selection, ylim=c(0,60),xlim=c(min(var_selection),max(var_selection)), main="All species", col="orange",xlab=variable)
+    # Sub Histogram per Species
+    for (espece in unique(iris$Species)){  
+        selection  <- subset(iris, Species == espece,select=variable)[,1]
+        hist(selection, ylim=c(0,60),xlim=c(min(var_selection), max(var_selection)), main=espece, col="lightgreen",
+    xlab=variable)
+    }
+}
+```
+Le code précédent produit 4 figures (un graphique par variable présente dans le dataset iris).
+Pour chaque figure l'histogramme de la variable considérée indépendamment de l'espèce (orange) ainsi que 3 histogramme complémentaires (1 par espèce d'iris)
+
++ Sepal.Width: distribution globale unimodale, quasi symétrique avec une queue plus importante dans les valeurs élevées de la distribution
+  + setosa: distribution unimodale
+  + versicolor: distribution unimodale non symétrique
+  + virginica : distribution bimodale ? 
+  On observe un chevauchement des distributions par espèces
++ Sepal.Length: Distribution quasi uniforme (dispersion elevée)
+  + setosa: distribution bimodale
+  + versicolor: distribution unimodale
+  + virginica:distribution unimodale non symétrique
+  Chevauchement entre les distributions versicolor et virginica et versicolor et setosa
++ Petal.Length: Distribution bimodales clairement identifiable
+  + setosa: distribution unimodale symetrique
+  + versicolor: distribution unimodale symetrique
+  + virginica:distribution unimodale non symétrique
+  Très peu de chevauchement entre les distributions par espèce
++ Petal.Width: Distribution multimodale (3 modes)
+  + setosa: distribution unimodale asymetrique
+  + versicolor: distribution unimodale dispersion importante
+  + virginica: distribution quasi uniforme dispersion importante
+  Très peu de chevauchement entre les distributions par espèce
+
+### Q5 Boîtes à moustache par variable et par espèce  
+  
+
+```{r}
+variable_names <- 
+for (variable in names(iris)[-5]){
+    # Select a variable of interest
+    var_selection <- iris[, c(variable, "Species")]
+    boxplot(var_selection[, variable] ~ var_selection$Species, col='lightgreen', xlab="Espèce", ylab=variable, main=paste(variable, "distribution comparatif par espèce"))
+}
+```
+
+On souhaite trouver un critère pour discriminer les espèces d'iris à partir des variables du datasets iris. L'observation des boxplots nous montre que les distributions des variables Petal.Width et Petal.Length sont très différentes selon les 3 espèces. En particulier la longueur des petales (Petal.Length) ont selon les espèces d'iris des distributions distinctes, monomodales, symétriques avec peu de valeurs aberrantes. La longueur des pétales (et eventuellement la largeur des ) semblent donc particulièrement pertinent pour discriminer les epsèces de façon simple. 
+
+## Titanic
+
+### Q1
+```{r}
+df <- read.table('../data/titanic.txt', header=T)
+summary(df)
+```
+### Q2
+```{r}
+for (i in c(1,2,3)){
+  freq_table <-table(df$Survived, df[,i])
+  print(freq_table)
+}
+
+```
+On croise la variable Survived (Survie) avec les autres variables (Sexe, Age, Class).  On souhaite maximiser la probabilité de survivre sachant le sexe, la classe et l'age connu. Du tableau, on note qu'il vaut a priori mieux être une femme (73 % de chance de survie) qu'un homme (21% de chance de survie). Les membres de la premières classe on également 62 % de survivre contre 25% pour un membre de la troisième classe. Enfin on remarque qu'un enfant à 50% de survivre. Pour pouvoir affiner l'analyse il faudrait connaitre les tables de croisement de la variable survie relativement à l'ensemble des variables (Class, Sex, Age). On ne peut que supposer qu'une femme de la première classe ou un enfant de la première classe à une chance plus élevée de survivre.
+
+```{r}
+# Mosaic plot with all possible factors
+# Color do not encode anything but help visualisation
+# Hard to see something on it
+mosaicplot(~ Survived + Sex + Class + Age, data=df, col=c('lightblue','pink'), off=c(1,1,1,1))
+```
+
+```{r}
+# Mosaic plot avec seulement la survie, sexe et classe de cabine
+# Les couleurs n'encode aucune information et aident uniquement à la distinction des blocs
+mosaicplot(~ Survived + Sex + Class, data=df, col=c('lightblue','pink'), off=c(2,2,2,2), main="MosaicPlot des effectifs selon leur survie, sexe et classe de cabine")
+```
+### Q3 
+Si les variables étaient indépendantes, le graphique devrait être composé de case carrées (aire similaires au travers des différentes variables marginales).
+Sur le deuxième mosaicplot on confirme les constatations effectués sur les croisements simples:
+On s'intéresse à maximiser la probabilité de survivre sachant que la catégorie est connue. 
+pour survivre mieux vaut être (et de loin) une femme membre de la première classe, dans une moindre mesure une femme membre de la seconde classe ou de l'équipage.
+
+

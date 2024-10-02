@@ -3,9 +3,7 @@ title: "TP2: Statistiques inférentielles: Intervalles de confiance"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
 ```{r}
 # Constants
@@ -16,48 +14,70 @@ n <- 36 # sample size
 
 
 ```{r}
-# fix random generation (good pratice to debug and compare)
+# set the seed used by random generator numbers (useful for debug and reproducibility of the results
 set.seed(123)
 sample <- rnorm(n=n,mean=mu,sd=sigma)
-hist(sample)
+# display histogram of the sample (Remark sample size is low)
+hist(sample, main=paste("Histogram of a sample of size", n, "drawn from a normal law N(",mu,",", sigma^2,"))"),col="lightgreen",xlab="")
 ```
 ```{r}
-confidence_interval_mean <- function(sample, sample_sd, alpha){
+#' Compute confidence interval associated with mean of a sample 
+#' 
+#' @param sample a numeric vector
+#' @param std theoretical standard deviation .
+#' @returns ci a numeric vector with the two bounds of the confidence interval
+#' @examples
+#' confidence_interval_mean(sample, 9, 0.05)
+#' 
+confidence_interval_mean <- function(sample, std, alpha){
   mean_sample <- mean(sample)
-  width <- sample_sd/sqrt(length(sample))*qnorm(1-(alpha/2))
+  width <- std/sqrt(length(sample))*qnorm(1-(alpha/2))
   ci <- c(mean_sample - width, mean_sample + width)
   return(ci)
 }
 
+#' Compute the width of confidence interval given its two bounds
+#' 
+#' @param ci confidence interval bounds, c(lower_bound,upper_bound)
+#' @returns ,float
+#' @examples
+#' ci_width(confidence_interval)
+#'
 ci_width <- function(ci){
   width = ci[2] - ci[1]
   return(width)
 }
+
+#' Compute confidence interval associated with the mean estimate from a sample 
+#' and display results in the terminal
+#' 
+#' @param sample numeric vector
+#' @param sigma numeric vector
+#' @param alpha float  
+#' @returns sig
+#' @examples
+#' ci_width(confidence_interval)
+#'
+display_results <-function(sample,sigma, alpha=0.05){
+ci <- confidence_interval_mean(sample, sigma, alpha)
+cat("Confidence interval associated with the mean estimate of the sample at risk level alpha=",alpha, "is:\n","ci=[",ci,"]","\n")
+# interval width 
+ci_width_default <- ci_width(ci)
+cat("Confidence interval width associated with the mean estimate of the sample at risk level alpha=",alpha, "is:\n",ci_width_default,"\n")
+}
 ```
 
+
 ```{r}
-# interval de confiance de la moyenne à 95% (alpha=0.05)
-alpha <- 0.05
-ci <- confidence_interval_mean(sample, sigma, alpha)
-print(ci)
-# largeur de l'intervalle
-ci_width_default <- ci_width(ci)
-print(ci_width_default)
-```
-```{r}
-# interval de confiance de la moyenne à 90% (alpha=0.1)
-alpha <- 0.1
-ci <- confidence_interval_mean(sample, sigma, alpha)
-print(ci)
-# largeur de l'intervalle
-ci_width_090 <- ci_width(ci)
-print(ci_width_090)
+for (alpha in c(0.05, 0.1)){
+  display_results(sample, sigma, alpha=alpha)
+}
 ```
 On remarque que :
 
 + l'estimation ponctuelle de la moyenne est identique (l'échantillon n'a pas été regénéré)
-+ la largeur de l'intervalle de confiance évolue en $ u_{1-\frac{\alpha}{2}}}\frac{\sigma}{\sqrt{n}}$
-+ à taille d'échantillon $n$ et écart type fixé, la taille de l'intervalle de confiance associée à la moyenne diminue quand $\alpha$ augmente.
++ la largeur de l'intervalle de confiance évolue en $u_{1-\frac{\alpha}{2}}\frac{\sigma}{\sqrt{n}}$ avec $u_{1-\frac{\alpha}{2}}$ le quantile d'ordre $1-\frac{\alpha}{2}$ de la loi $N(0,1)$.
++ à taille d'échantillon $n$ et écart type $\sigma$ fixé, la taille de l'intervalle de confiance associée à la moyenne diminue quand $\alpha$ augmente.
 
 ```{r}
 is_mean_in_ci <-function(ci, theoretical_mean){
@@ -68,25 +88,37 @@ is_mean_in_ci <-function(ci, theoretical_mean){
   
 return(inclusion_test) 
 }
-```
 
-```{r}
-n_repetition <- 10000
-for (alpha in c(0.05,0.1)){
+estimate_frequency_in <-function(sample_size, mean, sigma, n_repetition, alpha){
   n_in <- 0
   for (i in 1:n_repetition){
-   sample <- rnorm(n=n,mean=mu,sd=sigma)
+   # generate a new normal sample of size sample_size according to N(mean, sigma)
+   sample <- rnorm(n=sample_size,mean=mean,sd=sigma)
+   # compute confidence interval associated with mean estimate
    ci <- confidence_interval_mean(sample, sigma, alpha)
+   # test if theoretical mean is in the estimated confidence interval of the mean
    test <- is_mean_in_ci(ci, mu)
    if (test == TRUE){
      n_in <- (n_in + 1)
    }
   }
+  # compute frequency to which theoretical mean is in the confidence interval of the mean
   f_mean_in = n_in/n_repetition
+  return(f_mean_in) 
+}
+
+
+```
+
+```{r}
+n_repetition <- 1000
+for (alpha in c(0.05,0.1)){
+  f_mean_in <- estimate_frequency_in(n,mu,sigma, n_repetition, alpha)
   cat("Pourcentage du nombre d'occurence de la vraie moyenne dans l'intervalle de confiance pour un risque   alpha=",alpha, ":",f_mean_in, "\n")
 }
 
 ```
+
 
 ## La fonction t.test
 ```{r}
@@ -98,12 +130,15 @@ ci_095_unknown_var <- t.test(sample)$conf.int
 ci_width_095_unknown_var <- ci_width(ci_095_unknown_var)
 ci_090_unknown_var <- t.test(sample,conf.level = 0.90)$conf.int
 ci_width_090_unknown_var <- ci_width(ci_090_unknown_var)
-print(ci_width_095_unknown_var)
-print(ci_width_090_unknown_var)
+
+
+cat("Width of the confidence interval associated with the mean at risk level alpha=0.05 estimated using t.test", ci_width_095_unknown_var,"\n")
+
+cat("Width of the confidence interval associated with the mean at risk level alpha=0.1 estimated using t.test", ci_width_090_unknown_var,"\n")
 ```
 
 La largeur de l'intervalle de confiance associé à la moyenne quand l'ecart type est connu est donnée par
 $2u_{1-\frac{\alpha}{2}}\frac{\sigma}{n}$ à mettre en regard avec $2t_{1-\frac{\alpha}{2}}(n-1)\frac{s^*}{n}$.
 
 
-$t_{1-\frac{\alpha}{2}}(n-1)> u_{1-\frac{\alpha}{2}}$ l'intervalle de confiance associé à l'estimation de la moyenne sans connaitre la variance est donc plus large et ce particulièrement lorsque n est petit. Lorsque la taille d'échantillon n augmente la distribution de Student tend vers une loi normale, les largeurs des intervalles de confiance sont équivalentes. 
+$t_{1-\frac{\alpha}{2}}(n-1)> u_{1-\frac{\alpha}{2}}$ l'intervalle de confiance associé à l'estimation de la moyenne sans connaitre la variance est donc plus large et ce particulièrement lorsque $n$ est petit. Lorsque la taille d'échantillon $n$ augmente la distribution de Student tend vers une loi normale, les largeurs des intervalles de confiance deviennent équivalentes. 
