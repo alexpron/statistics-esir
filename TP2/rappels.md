@@ -11,7 +11,7 @@ Soit $(X_1, X_2, \cdots, X_n)$ un échantillon de $n$ variables aléatoires *ind
 
 + $s^2 = \frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})$  est **un** estimateur de $\sigma^2$
 
-+ $ E[s²] = \sigma^2$ et $var[s²]= 2 \frac{(N-1)\sigma^4}{N^2}$ $s^2$ est un estimateur sans biais et consistant de $\sigma^2$. 
++ $E[s^2] = \sigma^2$ et $var[s^2]= 2 \frac{(N-1)\sigma^4}{N^2}$ $s^2$ est un estimateur sans biais et consistant de $\sigma^2$. 
 
 + Dans les cas où $(X_1, X_2, \cdots, X_n)$ est un échantillon de **$n$ variables aléatoires indépendantes gaussiennes** 
 
