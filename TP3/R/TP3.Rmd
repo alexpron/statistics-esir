@@ -11,19 +11,20 @@ output: html_notebook
 sample <- read.table('../data/td3ex1_100.dat', header = F, dec= '.')
 # calcul de la moyenne de l'echantillon
 mean_sample = mean(sample$V1)
-print(mean_sample)
+cat("Moyenne en substance active de l'échantillon:", mean_sample)
 ```
 ##### Hypothèses
- Soit $X \sim N(\mu, \sigma)$. On observe $(X_1,\cdots, X_n)$ un échantillon aléatoire i.i.d. de taille $n$   
+ Soit $X \sim N(\mu, \sigma)$. On observe $(X_1,\cdots, X_n)$ un échantillon aléatoire i.i.d. de taille $n$.    
  L'hypothèse nulle $H_0$ est  $\mu = 1.5$ vs $H_1$ $\mu \neq 1.5$ (hypothèse alternative bilatérale).
 
 On fixe le niveau de signification ou risque de première espèce $\alpha = 0.05$. 
 $\alpha$ correspond à la probabilité de rejeter $H_0$ sachant que $H_0$ est vraie. 
 
 ##### Statistique de test
+
 En considérant $H_0$ vraie on a: 
-$$\hat{\mu} = \frac{\frac{1}{n}\sum_{i=1}^{n}X_i - 1.5}{{\sqrt{\frac{s^2}{n}}}}$$  
-avec $s^2$ l'estimateur sans biais de la variance de $X$
+$$\hat{\mu} = \frac{\bar{X} - 1.5}{{\sqrt{\frac{s^2}{n}}}}$$  
+avec $\bar{X}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}X_i$,  $s^2$ l'estimateur sans biais de la variance de $X$
 La statistique $\hat{\mu}$ suit sous $H_0$ une loi de Student à $n-1$ degré de liberté.
 
 ##### Probabilité critique ou P value 
@@ -75,7 +76,8 @@ L'hypothèse nulle,  $H_0$ est $\mu_{long} \leq \mu_{stand}$ et $H_1$,  $\mu_{lo
 
 Les deux échantillons sont issus d'une loi gaussienne et sont indépendants. Leurs variances ne sont pas connues. 
 On utilise la statistique de test suivante:
-$$\frac{\bar{X_1} - \bar{X_2}}{\sqrt{\frac{s_1^2}{N_1} + \frac{s_2^2}{N_2}}}$$
+$$\frac{\bar{X_1} - \bar{X_2}}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$ 
+
 Sous $H_0$ la statistique de test suit une loi de Student  dont le nombre de degré de liberté $\nu$ est une fonction complexe des deux échantillons. (Voir https://search.r-project.org/CRAN/refmans/DanielBiostatistics10th/html/Gosset_Welch.html et les références contenues pour une explication détaillée) 
 
 
@@ -128,6 +130,11 @@ print(mean_by_group)
 library(e1071)     
 skewness_by_group <- aggregate(PlantGrowth$weight, list(PlantGrowth$group), FUN=skewness)
 kurtosis_by_group <- aggregate(PlantGrowth$weight, list(PlantGrowth$group), FUN=kurtosis)
+# skewness : mesure d'asymétrie de la distribution (moment d'ordre 3) 
+# kurtosis: mesure d'aplatissement de la distribution (moment d'ordre 4) référence : distribution normale
+# valeurs pour une distribution normale
+# skewness: 0
+# kurtosis: 0
 print(skewness_by_group)
 print(kurtosis_by_group)
 ```
@@ -138,7 +145,7 @@ print(conf_int)
 }
 ```
 
-### Test d'hypothèse
+### Tests d'hypothèses
 ```{r}
 for (gr in unique(PlantGrowth$group)){
 df <- PlantGrowth[PlantGrowth$group != gr,]
@@ -153,8 +160,4 @@ https://www.datanovia.com/en/blog/how-to-perform-t-test-for-multiple-groups-in-r
 La pratique courante est de realiser une ANOVA (qui indique si des différences statistiques existent entre les moyenne des différents groupes puis d'effectuer des tests dits post hoc (t test) en corrigeant pour le nombre de test effectués p.ex. méthode de Bonferonni qui consiste à diviser le niveau de risque $\alpha$ initial par le nombre de tests)
 
 
-```{r}
-pwc <- PlantGrowth %>%
-  pairwise_t_test(weight ~ group, p.adjust.method = "bonferroni")
-print(pwc)
-```
+
