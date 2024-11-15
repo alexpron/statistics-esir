@@ -3,7 +3,7 @@ title: "Statistiques Inférentielles: Tests d'hypothèses"
 output: html_notebook
 ---
 
-## Illustration sur des données simulées 
+## 1 Illustration sur des données simulées 
 ### Question 1: Test de comparaison de la moyenne d'un échantillon à une moyenne théorique (one sample t-test)
 
 ```{r}
@@ -14,8 +14,10 @@ mean_sample = mean(sample$V1)
 cat("Moyenne en substance active de l'échantillon:", mean_sample)
 ```
 ##### Hypothèses
- Soit $X \sim N(\mu, \sigma)$. On observe $(X_1,\cdots, X_n)$ un échantillon aléatoire i.i.d. de taille $n$.    
- L'hypothèse nulle $H_0$ est  $\mu = 1.5$ vs $H_1$ $\mu \neq 1.5$ (hypothèse alternative bilatérale).
+ Soit $X \sim N(\mu, \sigma)$. On observe $(X_1,\cdots, X_n)$ un échantillon 
+ aléatoire i.i.d. de taille $n$.    
+ L'hypothèse nulle $H_0$ est  $\mu = 1.5$ vs $H_1$ $\mu \neq 1.5$ 
+ (hypothèse alternative $H_1$ bilatérale).
 
 On fixe le niveau de signification ou risque de première espèce $\alpha = 0.05$. 
 $\alpha$ correspond à la probabilité de rejeter $H_0$ sachant que $H_0$ est vraie. 
@@ -24,12 +26,14 @@ $\alpha$ correspond à la probabilité de rejeter $H_0$ sachant que $H_0$ est vr
 
 En considérant $H_0$ vraie on a: 
 $$\hat{\mu} = \frac{\bar{X} - 1.5}{{\sqrt{\frac{s^2}{n}}}}$$  
-avec $\bar{X}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}X_i$,  $s^2$ l'estimateur sans biais de la variance de $X$
+avec $\bar{X}=\frac{1}{n}\displaystyle\sum_{i=1}^{n}X_i$,  $s^2$ 
+l'estimateur sans biais de la variance de $X$
 La statistique $\hat{\mu}$ suit sous $H_0$ une loi de Student à $n-1$ degré de liberté.
 
 ##### Probabilité critique ou P value 
-La p value notée $p$ correspond à probabilité d'observer un évènement aussi extrême sachant que $H_0$ est vraie. 
-si $p < \alpha$ alors on rejette $H_0$. 
+La p value notée $p$ correspond à probabilité d'observer un évènement aussi 
+extrême sachant que $H_0$ est vraie. 
+Si $p < \alpha$ alors on rejette $H_0$. 
 
 
 ```{r}
@@ -74,17 +78,22 @@ one_sample_t_test(path_table = '../data/td3ex1_1000.dat', mu_H0)
 ## Test de comparaison d'échantillons (two sample t-test)
 L'hypothèse nulle,  $H_0$ est $\mu_{long} \leq \mu_{stand}$ et $H_1$,  $\mu_{long} > \mu_{stand}$
 
-Les deux échantillons sont issus d'une loi gaussienne et sont indépendants. Leurs variances ne sont pas connues. 
-On utilise la statistique de test suivante:
+Les deux échantillons sont issus d'une loi gaussienne et sont indépendants. 
+Leurs variances ne sont pas connues. On utilise la statistique de test suivante:
 $$\frac{\bar{X_1} - \bar{X_2}}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$ 
 
-Sous $H_0$ la statistique de test suit une loi de Student  dont le nombre de degré de liberté $\nu$ est une fonction complexe des deux échantillons. (Voir https://search.r-project.org/CRAN/refmans/DanielBiostatistics10th/html/Gosset_Welch.html et les références contenues pour une explication détaillée) 
+Sous $H_0$ la statistique de test suit une loi de Student  dont le nombre 
+de degré de liberté $\nu$ est une fonction complexe des deux échantillons. 
+(Voir https://search.r-project.org/CRAN/refmans/DanielBiostatistics10th/html/Gosset_Welch.html et les références contenues pour une explication détaillée) 
 
+Le fichier n'est a priori pas disponible sur Moodle nous allons simuler 
+les données  en nous inspirant de l'énoncé. On sait que la durée de vie 
+d'une batterie standard (et longlife) suit une loi normale. 
+La durée moyenne d'une batterie standard est estimée à 120 heures. 
+Nous pouvons donc simuler un échantillon gaussien de taille $n_{standart}=1000$ et d'écart type $\sigma_{standard}=20$. Pour simuler l'échantillon des batteries long life
+utilisons un échantillon de taille $n_long$=500 et une distribution gaussienne de moyenne $\mu_long=130$ et d'écart type $\sigma_{standard}=30$
 
-Le fichier n'est a priori pas disponible sur Moodle nous allons simuler les données  en nous inspirant de l'énoncé. On sait que la durée de vie d'une batterie standard (et longlife) suit une loi normale. La durée moyenne d'une batterie standard est estimée à 120 heures. Nous pouvons donc simuler un échantillon gaussien de taille $n_{standart}=1000$ et d'écart type $\sigma_{standard}=20$. Pour simuler l'échantillon des batteries long life
-utilison un échantillon de taille $n_long$=500 et une distribution gaussienne de moyenne $\mu_long=130$ et d'écart type $\sigma_{standard}=30$
-
-> Remarque: afin de nous assurer d'avoir des résultats cohérents on fixe la graine du générateur de nombre aléatoire de R en utilisant l'instruction setseed(123). 
+> Remarque: afin de nous assurer d'avoir des résultats cohérents on fixe la graine du générateur de nombre aléatoire de R en utilisant l'instruction set.seed(123). 
 
 ```{r}
 set.seed(123)
